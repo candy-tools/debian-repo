@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>candy-tools · Debian/APT repository</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      max-width: 44rem; margin: 3rem auto; padding: 0 1.25rem; line-height: 1.6;
+    }
+    h1 { margin-bottom: 0.25rem; }
+    .sub { color: #888; margin-top: 0; }
+    pre {
+      background: #1113; padding: 1rem; border-radius: 8px; overflow-x: auto;
+      font-size: 0.9rem;
+    }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    footer { margin-top: 3rem; color: #888; font-size: 0.85rem; }
+    a { color: #0a7; }
+  </style>
+</head>
+<body>
+  <h1>candy-tools APT repository</h1>
+  <p class="sub">Debian/Ubuntu packages (<code>amd64</code>, <code>arm64</code>) for the candy-tools.</p>
+
+  <h2>Install</h2>
+  <pre><code># 1. Trust the repository signing key
+sudo install -d -m 0755 /etc/apt/keyrings
+sudo curl -fsSL https://candy-tools.github.io/debian-repo/candy-tools-archive-keyring.gpg \
+  -o /etc/apt/keyrings/candy-tools-archive-keyring.gpg
+
+# 2. Add the repository
+sudo curl -fsSL https://candy-tools.github.io/debian-repo/candy-tools.sources \
+  -o /etc/apt/sources.list.d/candy-tools.sources
+
+# 3. Install a tool
+sudo apt update
+sudo apt install go-deps-view</code></pre>
+
+  <footer>
+    Source &amp; maintainer docs:
+    <a href="https://github.com/candy-tools/debian-repo">github.com/candy-tools/debian-repo</a>
+  </footer>
+</body>
+</html>
