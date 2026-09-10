@@ -38,9 +38,6 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     env:
       SITE: _site
-      # Import the signing key OUTSIDE the repo/site tree so it can never end up
-      # in the published artifact.
-      GNUPGHOME: ${{ runner.temp }}/candy-gnupg
     steps:
       - uses: actions/checkout@v4
 
@@ -52,6 +49,12 @@ jobs:
           # jq, gpg, curl are preinstalled on ubuntu-latest runners.
 
       - name: Import signing key
+        # GNUPGHOME is kept OUTSIDE the repo/site tree so the private key can
+        # never land in the published artifact. runner.* is only available at
+        # step level, so it's set here (and on the build step) rather than on
+        # the job.
+        env:
+          GNUPGHOME: ${{ runner.temp }}/candy-gnupg
         run: |
           install -d -m 700 "$GNUPGHOME"
           printf '%s' "${{ secrets.APT_SIGNING_KEY }}" | gpg --batch --import
@@ -63,6 +66,8 @@ jobs:
         run: make hydrate
 
       - name: Build & sign the index
+        env:
+          GNUPGHOME: ${{ runner.temp }}/candy-gnupg
         run: make build
 
       - uses: actions/configure-pages@v5
