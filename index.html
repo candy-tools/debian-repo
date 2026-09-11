@@ -106,34 +106,46 @@
     }
     .copy:hover, .copy.ok { box-shadow:inset 0 0 0 1.5px var(--accent); }
 
-    /* ---- packages: table restyle (markup produced by scripts/gen-index.sh) - */
-    .table-wrap {
-      overflow-x:auto; background:var(--surface);
-      border:1px solid var(--line); border-radius:var(--r-card);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    /* ---- packages: accordion (markup produced by scripts/render-index.sh) --- */
+    .panel-packages .pkg-list { display:flex; flex-direction:column; gap:.55rem; }
+    .panel-packages details.pkg {
+      background:var(--surface); border:1px solid var(--line); border-radius:var(--r-card);
+      overflow:hidden; box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
     }
-    .panel-packages table { border-collapse:collapse; width:100%; font-size:.9rem; }
-    .panel-packages th, .panel-packages td { text-align:left; padding:.7rem .9rem; border-bottom:1px solid var(--line); }
-    .panel-packages tbody tr:last-child td { border-bottom:0; }
-    .panel-packages thead th { color:var(--ink-soft); font-weight:600; white-space:nowrap; }
-    .panel-packages tbody tr { transition:background .12s ease; }
-    .panel-packages tbody tr:hover { background:var(--surface-2); }
-    /* package name (col 1) and arch badge (col 3) are the <code> cells */
-    .panel-packages td:first-child code { font-weight:500; color:var(--ink); }
-    .panel-packages td:nth-child(3) code {
-      font-size:.8rem; padding:.12rem .5rem; border-radius:6px;
-      background:var(--chip); color:var(--ink-soft);
+    /* always-visible header: name · version · architectures */
+    .panel-packages details.pkg > summary {
+      list-style:none; cursor:pointer; user-select:none;
+      display:flex; align-items:center; flex-wrap:wrap; gap:.75rem;
+      padding:.8rem 1rem; transition:background .12s ease;
     }
-    .panel-packages td.num { text-align:right; color:var(--ink-soft); font-variant-numeric:tabular-nums; white-space:nowrap; }
-    .panel-packages td.desc { color:var(--ink-soft); }
-    /* download pill */
-    .panel-packages tbody a {
-      display:inline-block; text-decoration:none; font-weight:600; font-size:.82rem;
-      color:var(--accent-deep); background:var(--accent-tint);
-      padding:.28rem .8rem; border-radius:var(--r-pill);
-      transition:box-shadow .15s ease;
+    .panel-packages details.pkg > summary::-webkit-details-marker { display:none; }
+    .panel-packages details.pkg > summary:hover { background:var(--surface-2); }
+    .panel-packages details.pkg[open] > summary { background:var(--surface-2); border-bottom:1px solid var(--line); }
+    .panel-packages .pkg .name code { font-weight:600; color:var(--ink); }
+    .panel-packages .pkg .ver { color:var(--ink-soft); font-size:.85rem; font-variant-numeric:tabular-nums; }
+    .panel-packages .pkg .arches { margin-left:auto; display:flex; flex-wrap:wrap; gap:.3rem; }
+    .panel-packages .arch {
+      display:inline-block; font-family:var(--font-mono); font-size:.75rem;
+      padding:.1rem .45rem; border-radius:6px; background:var(--chip); color:var(--ink-soft);
     }
-    .panel-packages tbody a:hover { box-shadow:inset 0 0 0 1.5px var(--accent); }
+    /* chevron affordance (rotates when the item is open) */
+    .panel-packages details.pkg > summary::after {
+      content:"\25be"; color:var(--ink-soft); font-size:.8rem; line-height:1;
+      transition:transform .15s ease;
+    }
+    .panel-packages details.pkg[open] > summary::after { transform:rotate(180deg); }
+    /* expanded body: description at full width, download options below it */
+    .panel-packages .pkg-body { padding:.2rem 1rem 1rem; }
+    .panel-packages .pkg-body .desc { margin:.65rem 0 .95rem; color:var(--ink); }
+    .panel-packages .downloads { display:flex; flex-wrap:wrap; gap:.5rem; }
+    .panel-packages .downloads a {
+      display:inline-flex; align-items:baseline; gap:.4rem; text-decoration:none;
+      font-weight:600; font-size:.82rem; color:var(--accent-deep); background:var(--accent-tint);
+      padding:.32rem .8rem; border-radius:var(--r-pill); transition:box-shadow .15s ease;
+    }
+    .panel-packages .downloads a:hover { box-shadow:inset 0 0 0 1.5px var(--accent); }
+    .panel-packages .downloads a::before { content:"\2b07"; font-size:.78rem; opacity:.8; }
+    .panel-packages .downloads a .s { color:var(--ink-soft); font-weight:500; font-size:.78rem; font-variant-numeric:tabular-nums; }
     .empty {
       margin:0; padding:2.6rem 1.4rem; text-align:center; color:var(--ink-soft);
       background:var(--surface); border:1px dashed var(--line); border-radius:var(--r-card);
