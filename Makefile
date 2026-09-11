@@ -83,9 +83,17 @@ verify: require-key ## sanity-check a built site: signature valid + pooled debs 
 	 [ $$fail -eq 0 ] || exit 1
 
 .PHONY: serve
-serve: ## serve the built site at http://localhost:8000 for testing
-	@echo ">> serving $(SITE) at http://localhost:8000 (Ctrl-C to stop)"
-	@cd "$(SITE)" && python3 -m http.server 8000
+serve: ## serve the built site at http://localhost:8000 (renders demo content if the repo has no packages)
+	@if [ -d "$(SITE)/pool" ] && find "$(SITE)/pool" -name '*.deb' 2>/dev/null | grep -q .; then \
+		dir="$(SITE)"; \
+	else \
+		dir=".cache/preview"; \
+		echo "⚠️  no packages in $(SITE) — serving demo preview only (run 'make publish' to build the real site; demo content is never published)"; \
+		rm -rf "$$dir"; mkdir -p "$$dir"; \
+		DEMO_WHEN_EMPTY=1 THEME="$(THEME)" ./scripts/render-index.sh "$$dir" $(ARCHES); \
+	fi; \
+	echo ">> serving $$dir at http://localhost:8000 (Ctrl-C to stop)"; \
+	cd "$$dir" && python3 -m http.server 8000
 
 .PHONY: themes
 themes: ## list the landing-page colour themes (use: make publish THEME=<name>)
