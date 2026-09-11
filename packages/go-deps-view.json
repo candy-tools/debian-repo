@@ -1,0 +1,16 @@
+{
+  "name": "go-deps-view",
+  "version": "0.1.1",
+  "artifacts": [
+    {
+      "arch": "amd64",
+      "url": "https://github.com/candy-tools/go-deps-view/releases/download/v0.1.1/go-deps-view_0.1.1_linux_amd64.deb",
+      "sha256": "74740fc3d4945d3ee0dc97c93f7ef05172c349e258641a05ca70bf182135496a"
+    },
+    {
+      "arch": "arm64",
+      "url": "https://github.com/candy-tools/go-deps-view/releases/download/v0.1.1/go-deps-view_0.1.1_linux_arm64.deb",
+      "sha256": "a8280a7ce862a9c17d3180b7d691e5cdd353b465230d01ffe1a2e9d242065bac"
+    }
+  ]
+}
