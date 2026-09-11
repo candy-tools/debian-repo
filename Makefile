@@ -8,7 +8,11 @@
 #
 # Local dry-run of the whole CI publish:  make publish && make serve
 
-REPO_URL    ?= https://candy-tools.github.io/debian-repo
+# Landing-page config (title, URLs, colour theme) lives in conf/site.conf.
+# Colour theme: 'violet' is the built-in default; alternates live in
+# conf/themes/<name>.css — run `make themes` to list them. Set it in
+# conf/site.conf, or override for a single build: `make publish THEME=teal`.
+THEME       ?=
 KEY_NAME    ?= candy-tools APT repository
 KEY_EMAIL   ?= contact@andresbott.com
 
@@ -19,6 +23,7 @@ SCHEMA      := schema/package.schema.json
 ARCHES      := amd64 arm64
 KEYRING_PUB := candy-tools-archive-keyring.gpg
 KEYRING_ASC := candy-tools-archive-keyring.asc
+KEY_SECRET_ASC := candy-tools-signing-key.secret.asc
 
 # All GPG operations use a repository-local keyring by default so the private
 # key never mixes with the user's personal one. CI overrides GNUPGHOME to a temp
@@ -48,7 +53,7 @@ hydrate: ## assemble $(SITE)/pool from packages/*.json (download+verify) and deb
 
 .PHONY: build
 build: require-key ## generate + GPG-sign the index in $(SITE) from the pool
-	@./scripts/gen-index.sh "$(SITE)" "$(FTPCONF)" "$(KEY_EMAIL)" $(ARCHES)
+	@THEME="$(THEME)" ./scripts/gen-index.sh "$(SITE)" "$(FTPCONF)" "$(KEY_EMAIL)" $(ARCHES)
 	@echo ">> tip: 'make serve' to test locally, or commit+push to publish via CI"
 
 .PHONY: add
@@ -82,6 +87,11 @@ serve: ## serve the built site at http://localhost:8000 for testing
 	@echo ">> serving $(SITE) at http://localhost:8000 (Ctrl-C to stop)"
 	@cd "$(SITE)" && python3 -m http.server 8000
 
+.PHONY: themes
+themes: ## list the landing-page colour themes (use: make publish THEME=<name>)
+	@echo "violet   (built-in default)"
+	@for f in conf/themes/*.css; do [ -e "$$f" ] && echo "$$(basename "$$f" .css)"; done
+
 .PHONY: clean
 clean: ## remove the built site and caches (keeps packages/ and debs/)
 	@rm -rf "$(SITE)" .cache
@@ -112,6 +122,7 @@ key: ## generate the GPG signing key (one-time; refuses to overwrite)
 		'%commit' \
 		| gpg --batch --gen-key
 	@$(MAKE) --no-print-directory export-key
+	@$(MAKE) --no-print-directory backup-key
 	@echo "✅ signing key created. run 'make publish' to build a signed repo."
 
 .PHONY: export-key
@@ -119,6 +130,13 @@ export-key: require-key ## (re)export the public signing key (binary + armored)
 	@gpg --export "$(KEY_EMAIL)" > $(KEYRING_PUB)
 	@gpg --export --armor "$(KEY_EMAIL)" > $(KEYRING_ASC)
 	@echo "✅ exported $(KEYRING_PUB) (for apt) and $(KEYRING_ASC) (armored)"
+
+.PHONY: backup-key
+backup-key: require-key ## export the PRIVATE signing key (armored) for offline/vault backup
+	@gpg --export-secret-keys --armor "$(KEY_EMAIL)" > $(KEY_SECRET_ASC)
+	@chmod 600 $(KEY_SECRET_ASC)
+	@echo "✅ wrote $(KEY_SECRET_ASC) (armored PRIVATE key, git-ignored)"
+	@echo "⚠️  move it to your password vault, then shred the local copy: shred -u $(KEY_SECRET_ASC)"
 
 .PHONY: key-info
 key-info: require-key ## show the signing key fingerprint and uid

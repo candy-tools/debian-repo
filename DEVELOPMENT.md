@@ -40,10 +40,10 @@ for this repo; step 5 is repeated per tool you want to publish.
 make key
 ```
 
-Creates an RSA-4096 signing key in the git-ignored `.gnupg-repo/` and exports the
-public key to `candy-tools-archive-keyring.gpg` (+ `.asc`), which are committed and
-served to users. Back up `.gnupg-repo/` somewhere safe — it is the only copy of the
-private key (see [Signing](#signing)).
+Creates an RSA-4096 signing key in the git-ignored `.gnupg-repo/`, exports the
+public key to `candy-tools-archive-keyring.gpg` (+ `.asc`) — committed and served to
+users — and writes a private-key backup, `candy-tools-signing-key.secret.asc`, for
+you to move into your vault (see [Backup and recovery](#backup-and-recovery)).
 
 **2 — Store the private key as a CI secret.** Signing runs in CI, so it needs the
 private key as `APT_SIGNING_KEY` (piped straight in, never printed):
@@ -69,9 +69,18 @@ valid, empty, signed index — users can already add the repo.
 
 **5 — Wire a tool repo to publish itself** (per app). In the tool's repository:
 
-- Create a fine-grained PAT scoped to `candy-tools/debian-repo` with
-  **Contents: read and write**, and store it as the `DEBIAN_REPO_TOKEN` secret in
-  the tool repo.
+- Create a token that can push to `debian-repo`, and store it as the
+  `DEBIAN_REPO_TOKEN` secret in the tool repo. Either:
+  - **Fine-grained PAT** (tightest scope). Fine-grained tokens are opt-in per
+    org, so first enable them or `candy-tools` won't appear as a resource owner:
+    `candy-tools` org → **Settings → Personal access tokens → Settings →** *Allow
+    access via fine-grained personal access tokens*. Then create the token with
+    **Resource owner = candy-tools**, *Only select repositories* → `debian-repo`,
+    **Repository permissions → Contents: Read and write** (approve it under the
+    org's *Personal access tokens → Pending requests* if approval is required).
+  - **Classic PAT** (works without the org setting, but broader — reaches every
+    repo you can access). Create one with the `repo` scope; if the org enforces
+    SAML SSO, click *Configure SSO → Authorize* for `candy-tools`.
 - Add one step to the tool's release workflow, after its `.deb` files are built
   (e.g. by goreleaser into `dist/`):
 
@@ -159,7 +168,7 @@ make verify      # check the built signature + that pooled debs parse
 | `make add DEB=…` | stage a local `.deb` into `debs/` for manual hosting |
 | `make register NAME=… REPO=… TAG=…` | generate a `packages/<name>.json` locally |
 | `make serve` / `make verify` / `make clean` | test locally / sanity-check / clean |
-| `make key` / `make export-key` / `make key-info` | signing-key management |
+| `make key` / `make export-key` / `make backup-key` / `make key-info` | signing-key management |
 
 ## Signing
 
@@ -169,6 +178,35 @@ the `APT_SIGNING_KEY` CI secret — never in the tree. Only the public
 (for unattended signing); its sole capability is signing this public repo's index.
 If it is lost or compromised, regenerate with `make key` and republish the public
 key.
+
+### Backup and recovery
+
+The private key is the only irreplaceable secret in this repo, so keep an offline
+copy. `make key` writes one for you: **`candy-tools-signing-key.secret.asc`**, an
+armored export of the passphrase-less private key (git-ignored via `*.secret.asc`).
+Move that file into your password vault and shred the local copy — anyone holding
+it can sign as this repo. Re-export it any time with `make backup-key`:
+
+```bash
+make backup-key      # (re)writes candy-tools-signing-key.secret.asc
+```
+
+`.gnupg-repo/` itself holds the key in GnuPG's database format under
+`private-keys-v1.d/` — there is no `.asc` inside it, which is why the export exists.
+There is no passphrase to store (the key has none). To restore onto a
+fresh machine, recreate the home dir, import the key, and refresh the CI secret:
+
+```bash
+mkdir -p .gnupg-repo && chmod 700 .gnupg-repo
+GNUPGHOME=.gnupg-repo gpg --import candy-tools-signing-key.secret.asc
+GNUPGHOME=.gnupg-repo gpg --export-secret-keys --armor contact@andresbott.com \
+  | gh secret set APT_SIGNING_KEY --repo candy-tools/debian-repo
+```
+
+Backing up the whole `.gnupg-repo/` directory works too and additionally preserves
+the revocation certificate (`openpgp-revocs.d/`). Nothing else needs backing up:
+`DEBIAN_REPO_TOKEN` is regenerable, and the `candy-tools-archive-keyring.gpg`/`.asc`
+keyring is the public key, already committed to the tree.
 
 ## Layout
 

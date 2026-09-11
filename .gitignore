@@ -4,6 +4,9 @@
 # Local GPG signing keyring — PRIVATE, must never be committed.
 .gnupg-repo/
 
+# Exported PRIVATE signing key (armored backup) — must never be committed.
+*.secret.asc
+
 # Build scratch.
 .cache/
 /pool/
