@@ -37,8 +37,8 @@
         "required": ["arch", "url", "sha256"],
         "properties": {
           "arch": {
-            "description": "Debian architecture (must match the .deb's Architecture field).",
-            "enum": ["amd64", "arm64"]
+            "description": "Debian architecture (must match the .deb's Architecture field). \"all\" is an architecture-independent package; apt-ftparchive includes it in every architecture's index.",
+            "enum": ["all", "amd64", "arm64"]
           },
           "url": {
             "type": "string",
