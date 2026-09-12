@@ -52,7 +52,15 @@ echo "✅ wrote $OUT ($NAME $ver, $(echo "$artifacts" | jq length) artifact(s))"
 # validate against the repo's schema when the validator is available
 SCHEMA="$(cd "$(dirname "$0")/.." && pwd)/schema/package.schema.json"
 if command -v check-jsonschema >/dev/null 2>&1; then
-  check-jsonschema --schemafile "$SCHEMA" "$OUT" >/dev/null && echo "✅ validates against schema"
+  # capture output so a clean pass stays quiet, but surface the errors on a
+  # failure (otherwise set -e aborts here with no clue why).
+  if err=$(check-jsonschema --schemafile "$SCHEMA" "$OUT" 2>&1); then
+    echo "✅ validates against schema"
+  else
+    printf '%s\n' "$err" >&2
+    echo "❌ $OUT failed schema validation against $SCHEMA" >&2
+    exit 1
+  fi
 else
   echo "⚠️  check-jsonschema not found — skipping local validation (CI validates too)"
 fi

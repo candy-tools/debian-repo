@@ -47,6 +47,10 @@ validate: ## validate packages/*.json against the JSON schema
 	 command -v check-jsonschema >/dev/null 2>&1 || { echo "❌ check-jsonschema not found (pip install check-jsonschema)"; exit 1; }; \
 	 check-jsonschema --schemafile $(SCHEMA) $$files && echo "✅ all package files valid"
 
+.PHONY: test
+test: ## run schema regression tests (fixtures under tests/)
+	@./tests/schema_test.sh
+
 .PHONY: hydrate
 hydrate: ## assemble $(SITE)/pool from packages/*.json (download+verify) and debs/
 	@./scripts/hydrate.sh "$(SITE)"
