@@ -134,9 +134,15 @@
       transition:transform .15s ease;
     }
     .panel-packages details.pkg[open] > summary::after { transform:rotate(180deg); }
-    /* expanded body: description at full width, download options below it */
+    /* expanded body: description, optional homepage link, then download options */
     .panel-packages .pkg-body { padding:.2rem 1rem 1rem; }
     .panel-packages .pkg-body .desc { margin:.65rem 0 .95rem; color:var(--ink); }
+    .panel-packages .pkg-body .home {
+      display:inline-flex; align-items:center; gap:.3rem; margin:0 0 .95rem;
+      font-family:var(--font-mono); font-size:.8rem; color:var(--ink-soft); text-decoration:none;
+    }
+    .panel-packages .pkg-body .home::before { content:"\2197"; color:var(--accent-deep); font-size:.82rem; }
+    .panel-packages .pkg-body .home:hover { color:var(--accent-deep); }
     .panel-packages .downloads { display:flex; flex-wrap:wrap; gap:.5rem; }
     .panel-packages .downloads a {
       display:inline-flex; align-items:baseline; gap:.4rem; text-decoration:none;
