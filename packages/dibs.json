@@ -1,0 +1,16 @@
+{
+  "name": "dibs",
+  "version": "0.6.2",
+  "artifacts": [
+    {
+      "arch": "amd64",
+      "url": "https://github.com/candy-tools/dibs/releases/download/v0.6.2/dibs_0.6.2_linux_amd64.deb",
+      "sha256": "4cfdb6430fc8e4218900bc6264a552516fbe9cc3ab02881f699609ab9d33969f"
+    },
+    {
+      "arch": "arm64",
+      "url": "https://github.com/candy-tools/dibs/releases/download/v0.6.2/dibs_0.6.2_linux_arm64.deb",
+      "sha256": "80de7691eafcdf9f1879758a6d7230b5a59059be343ea3c2a27ac6394731bbc9"
+    }
+  ]
+}
