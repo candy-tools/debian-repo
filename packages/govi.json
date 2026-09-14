@@ -1,0 +1,11 @@
+{
+  "name": "govi",
+  "version": "0.3.0",
+  "artifacts": [
+    {
+      "arch": "amd64",
+      "url": "https://github.com/candy-tools/govi/releases/download/v0.3.0/govi_0.3.0_linux_amd64.deb",
+      "sha256": "bdccbd649f44e112912c8e21c8b5915ac292ddef8cb0bdfc76883a69ca2b09ed"
+    }
+  ]
+}
