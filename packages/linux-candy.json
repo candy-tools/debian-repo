@@ -1,11 +1,11 @@
 {
   "name": "linux-candy",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "artifacts": [
     {
       "arch": "all",
-      "url": "https://github.com/candy-tools/linux-candy-scripts/releases/download/v0.3.1/linux-candy_0.3.1_all.deb",
-      "sha256": "c1fce4a1d3454069fc595aea37cf7e2d786a5f832f06385e2630f656a05d4fc0"
+      "url": "https://github.com/candy-tools/linux-candy-scripts/releases/download/v0.4.0/linux-candy_0.4.0_all.deb",
+      "sha256": "7f71e1d3b2075c651b7f6eb33c0d27d91283d4805052febdf055033cd0f3d708"
     }
   ]
 }
