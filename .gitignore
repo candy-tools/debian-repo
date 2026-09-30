@@ -9,8 +9,9 @@
 
 # Build scratch.
 .cache/
-/pool/
-/dists/
+
+# The engine, cloned by the Makefile for local builds.
+/.engine/
 
 # Editor / OS cruft.
 .DS_Store
