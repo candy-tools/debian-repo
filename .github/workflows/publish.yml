@@ -6,8 +6,10 @@ name: Publish APT repo
 # publish-only call: this repository is the collection its tools push to). The
 # full set is reconstructed every run, so no app can clobber another's package.
 #
-# Signing uses the APT_SIGNING_KEY secret of the github-pages environment
-# (`make key-to-repo REPO=candy-tools/debian-repo`), reached via secrets: inherit.
+# Signing uses the APT_SIGNING_KEY repository secret, passed to the engine by
+# name. The engine lives under another account (andresbott), and across accounts
+# GitHub ignores `secrets: inherit` and does not hand a github-pages environment
+# secret to the engine's job either — the key must be a repository secret here.
 
 on:
   push:
@@ -27,4 +29,5 @@ jobs:
       id-token: write
     # keep the engine version in step with ENGINE_REF in the Makefile
     uses: andresbott/gh-action-debian-repo/.github/workflows/publish.yml@v1.0.0-rc.2
-    secrets: inherit
+    secrets:
+      APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
