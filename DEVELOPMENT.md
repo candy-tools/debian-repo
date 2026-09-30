@@ -62,13 +62,20 @@ make setup-repo REPO=candy-tools/debian-repo TAGS=
 ```
 
 **3 — Store the private key as a CI secret.** Signing runs in CI, so it needs the
-private key as the `APT_SIGNING_KEY` secret of the `github-pages` environment,
-where only the deploying job can read it. This prints the fingerprint and uid of
-every key it is about to upload:
+private key as the `APT_SIGNING_KEY` **repository** secret (piped straight in,
+never printed), which `publish.yml` passes to the engine by name:
 
 ```bash
-make key-to-repo REPO=candy-tools/debian-repo
+GNUPGHOME=.gnupg-repo gpg --batch --export-secret-keys --armor \
+  | gh secret set APT_SIGNING_KEY --repo candy-tools/debian-repo
 ```
+
+Not `make key-to-repo`: it writes a `github-pages` *environment* secret, which the
+engine's docs recommend, but the engine lives under another account
+(`andresbott`), and across accounts GitHub hands neither `secrets: inherit` nor
+an environment secret to its job. Don't keep a stale environment secret of the
+same name either — delete it with
+`gh secret delete APT_SIGNING_KEY --repo candy-tools/debian-repo --env github-pages`.
 
 **4 — Create the GitHub App** the tools push with:
 
@@ -222,13 +229,12 @@ make serve         # serve _site/ at http://localhost:8000 to test with apt
 | `make add DEB=…` | stage a local `.deb` into `debs/` for manual hosting |
 | `make register NAME=… REPO=… TAG=…` | write a `packages/<name>.json` locally |
 | `make serve` / `make verify-site` / `make clean` | test locally / sanity-check / clean |
-| `make key` / `make backup-key` / `make key-info` / `make key-to-repo` | signing-key management |
+| `make key` / `make backup-key` / `make key-info` | signing-key management (upload: see [Setup](#setup), step 3) |
 
 ## Signing
 
 The private signing key lives only in the git-ignored `.gnupg-repo/` locally and in
-the `APT_SIGNING_KEY` secret of the `github-pages` environment — never in the
-tree. The public keyring users download (`candy-tools-archive-keyring.gpg`, plus
+the `APT_SIGNING_KEY` repository secret — never in the tree. The public keyring users download (`candy-tools-archive-keyring.gpg`, plus
 an armored `.asc`) is exported from the signing key at every publish. The key has
 no passphrase (for unattended signing); its sole capability is signing this
 public repo's index. To replace it without breaking clients, follow the engine's
@@ -255,7 +261,8 @@ refresh the CI secret:
 ```bash
 mkdir -p .gnupg-repo && chmod 700 .gnupg-repo
 GNUPGHOME=.gnupg-repo gpg --import signing-key.secret.asc
-make key-to-repo REPO=candy-tools/debian-repo
+GNUPGHOME=.gnupg-repo gpg --batch --export-secret-keys --armor \
+  | gh secret set APT_SIGNING_KEY --repo candy-tools/debian-repo
 ```
 
 Backing up the whole `.gnupg-repo/` directory works too and additionally preserves
