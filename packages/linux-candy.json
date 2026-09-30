@@ -3,6 +3,7 @@
   "version": "0.4.0",
   "artifacts": [
     {
+      "release": "any",
       "arch": "all",
       "url": "https://github.com/candy-tools/linux-candy-scripts/releases/download/v0.4.0/linux-candy_0.4.0_all.deb",
       "sha256": "7f71e1d3b2075c651b7f6eb33c0d27d91283d4805052febdf055033cd0f3d708"
