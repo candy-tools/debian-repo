@@ -27,7 +27,6 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    # keep the engine version in step with ENGINE_REF in the Makefile
     uses: andresbott/gh-action-debian-repo/.github/workflows/publish.yml@v1.0.0-rc.2
     secrets:
       APT_SIGNING_KEY: ${{ secrets.APT_SIGNING_KEY }}
