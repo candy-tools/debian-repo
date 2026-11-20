@@ -1,18 +1,18 @@
 {
   "name": "todo",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "artifacts": [
     {
       "release": "any",
       "arch": "amd64",
-      "url": "https://github.com/candy-tools/todo/releases/download/v0.9.1/todo_0.9.1_linux_amd64.deb",
-      "sha256": "bc93c45b8715db717c2e472241da4bc50cd87ac3a3d6096d358cc7e24a45eebc"
+      "url": "https://github.com/candy-tools/todo/releases/download/v0.9.2/todo_0.9.2_linux_amd64.deb",
+      "sha256": "8781b59eaa9d34b41a31247c0a6c70e835fa9933b38150ec1b5da3c41662a9f2"
     },
     {
       "release": "any",
       "arch": "arm64",
-      "url": "https://github.com/candy-tools/todo/releases/download/v0.9.1/todo_0.9.1_linux_arm64.deb",
-      "sha256": "f352cdc5c47820d7b169399462306977cf3c6d9f83b0a004266e5550408edc42"
+      "url": "https://github.com/candy-tools/todo/releases/download/v0.9.2/todo_0.9.2_linux_arm64.deb",
+      "sha256": "c1f41d07d15961cace59247d5df61be87512380fb558adb654fdb78eecdaec6a"
     }
   ]
 }
